@@ -13,10 +13,20 @@ jobs:
 - job: BuildArtifact
   displayName: 'Build Artifact'
   steps:
-  - task: UseJavaVersion@0
+  - task: UseDotNet@2
     inputs:
-      version: '21.0.2'
-      addToPath: true
+      packageType: 'sdk'
+      version: '2.315.414'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+    displayName: 'Use .NET SDK'
+
+  - script: |
+      echo '##vso[task.prependpath]$(Agent.ToolsDirectory)/dotnet'
+      dotnet tool install --global Java
+      dotnet tool install --global Maven
+      echo '##vso[task.prependpath]$(Agent.ToolsDirectory)/dotnet/.store/javalang.jdk'
+      echo '##vso[task.prependpath]$(Agent.ToolsDirectory)/dotnet/.store/javalang.maven'
+    displayName: 'Install Java and Maven'
 
   - script: 'mvn clean package -DskipTests=true'
     displayName: 'Maven Build'
