@@ -1,0 +1,27 @@
+# azure-pipelines.yml
+
+trigger:
+- master
+
+pr:
+- '*'
+
+pool:
+  vmImage: 'windows-latest'  # Use a Windows VM image
+
+jobs:
+- job: BuildArtifact
+  displayName: 'Build Artifact'
+  steps:
+  - task: UseJavaVersion@0
+    inputs:
+      version: '21.0.2'
+      addToPath: true
+
+  - script: 'mvn clean package -DskipTests=true'
+    displayName: 'Maven Build'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(System.DefaultWorkingDirectory)/path/to/artifact'  # Replace with the actual path to your artifact
+      artifactName: 'my-artifact'
